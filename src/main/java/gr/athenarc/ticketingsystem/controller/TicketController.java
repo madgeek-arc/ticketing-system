@@ -40,7 +40,7 @@ public class TicketController {
     }
 
     @PostMapping("{id}/comments")
-    public Mono<Ticket> aComment(@PathVariable String id, @RequestBody Comment comment) {
+    public Mono<Ticket> addComment(@PathVariable String id, @RequestBody Comment comment) {
         return ticketService.addComment(id, comment);
     }
 }

@@ -4,6 +4,7 @@ import gr.athenarc.ticketingsystem.domain.Comment;
 import gr.athenarc.ticketingsystem.domain.Ticket;
 import gr.athenarc.ticketingsystem.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -35,12 +36,17 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
+    public void delete(String id) {
+        ticketRepository.deleteById(id).block();
+    }
+
     public Mono<Ticket> get(String id) {
         return ticketRepository.findById(id);
     }
 
     public Flux<Ticket> getAll() {
-        return ticketRepository.findAll();
+        Sort sort = Sort.by("name", "updated", "created");
+        return ticketRepository.findAll(sort);
     }
 
     public Mono<Ticket> addComment(String ticketId, Comment comment) {
@@ -51,5 +57,9 @@ public class TicketService {
         }
         ticket.getComments().add(comment);
         return ticketRepository.save(ticket);
+    }
+
+    public TicketRepository getTicketRepository() {
+        return ticketRepository;
     }
 }

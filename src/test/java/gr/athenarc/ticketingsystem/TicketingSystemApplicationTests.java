@@ -9,6 +9,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import static com.mongodb.assertions.Assertions.assertNotNull;
+import static gr.athenarc.ticketingsystem.TestHelper.*;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest
@@ -22,9 +23,27 @@ class TicketingSystemApplicationTests {
 	}
 
 	@Test
-	public void addAndFindByName() {
-		ticketRepository.save(createTestTicket()).block();
+	void repoSaveAndFindByName() {
+		ticketRepository.save(TestHelper.createTestTicket()).block();
 		Flux<Ticket> ticketFlux = ticketRepository.findAllByName("Test");
+
+		StepVerifier
+				.create(ticketFlux)
+				.assertNext(ticket -> {
+					assertNotNull(ticket.getId());
+					assertEquals("Check Name", TEST_TICKET_NAME, ticket.getId());
+					assertEquals("Check Assigner", TEST_TICKET_ASSIGNER , ticket.getAssigner());
+					assertEquals("Check Assignee", TEST_TICKET_ASSIGNEE , ticket.getAssignee());
+					assertNotNull(ticket.getAssigner());
+				})
+				.expectComplete()
+				.verify();
+	}
+
+	@Test
+	void repoDelete() {
+		ticketRepository.deleteById("test").block();
+		Flux<Ticket> ticketFlux = ticketRepository.findById("test").flux();
 
 		StepVerifier
 				.create(ticketFlux)
@@ -35,17 +54,5 @@ class TicketingSystemApplicationTests {
 				})
 				.expectComplete()
 				.verify();
-	}
-
-	private Ticket createTestTicket() {
-		Ticket ticket = new Ticket();
-		ticket.setId("test");
-		ticket.setName("Test");
-		ticket.setAssignee("me@me.me");
-		ticket.setAssigner("he@he.he");
-		ticket.setDescription("This is a test ticket.");
-		ticket.setPriority("low");
-		ticket.setStatus("pending");
-		return ticket;
 	}
 }
