@@ -87,6 +87,24 @@ class TicketServiceTests {
     }
 
     @Test
+    void createMultipleTickets() {
+        Ticket ticket = ticketService.get(TICKET_ID).blockOptional().orElse(createTestTicket());
+        ticket.setId(null);
+        String ticketName = "REMOVE ME ";
+        for (int i = 0; i < 10000; i++) {
+            Ticket t = new Ticket(ticket);
+            t.setName(ticketName + i);
+            ticketService.add(t).block();
+        }
+    }
+
+    @Test
+    void removeTickets() {
+        Flux<Ticket> tickets = ticketService.getAllByName("REMOVE ME ");
+        tickets.doOnNext(ticket -> ticketService.delete(ticket.getId()));
+    }
+
+    @Test
     void deleteTestTicket() {
         ticketService.delete(TICKET_ID);
     }

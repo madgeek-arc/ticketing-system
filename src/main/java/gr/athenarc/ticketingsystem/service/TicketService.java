@@ -49,6 +49,10 @@ public class TicketService {
         return ticketRepository.findAll(sort);
     }
 
+    public Flux<Ticket> getAllByName(String name) {
+        return ticketRepository.findAllByName(name);
+    }
+
     public Mono<Ticket> addComment(String ticketId, Comment comment) {
         comment.setDate(new Date());
         Ticket ticket = ticketRepository.findById(ticketId).blockOptional().orElseThrow(() -> new RuntimeException("Could not find resource with id: " + ticketId));

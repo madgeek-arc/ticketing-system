@@ -12,6 +12,16 @@ public class Comment {
         // no arg constructor
     }
 
+    public Comment(String from, String text, Date date) {
+        this.from = from;
+        this.text = text;
+        this.date = date;
+    }
+
+    public Comment(Comment comment) {
+        this(comment.getFrom(), comment.getText(), Date.from(comment.getDate().toInstant()));
+    }
+
     public String getFrom() {
         return from;
     }

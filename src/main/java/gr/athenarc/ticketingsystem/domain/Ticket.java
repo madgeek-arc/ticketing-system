@@ -3,6 +3,7 @@ package gr.athenarc.ticketingsystem.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,24 @@ public class Ticket {
 
     public Ticket() {
         // no arg constructor
+    }
+
+    public Ticket(String id, String name, String assigner, String assignee, Date created, Date updated, String description, String status, String priority, List<Comment> comments) {
+        this.id = id;
+        this.name = name;
+        this.assigner = assigner;
+        this.assignee = assignee;
+        this.created = created;
+        this.updated = updated;
+        this.description = description;
+        this.status = status;
+        this.priority = priority;
+        this.comments = comments;
+    }
+
+    public Ticket(Ticket ticket) {
+        // copy constructor
+        this(ticket.getId(), ticket.getName(), ticket.getAssigner(), ticket.getAssignee(), ticket.getCreated(), ticket.getUpdated(), ticket.getDescription(), ticket.getStatus(), ticket.getPriority(), ticket.getComments());
     }
 
     public String getId() {
