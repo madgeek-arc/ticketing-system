@@ -3,7 +3,6 @@ package gr.athenarc.ticketingsystem.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class Ticket {
     @Id
     private String id;
     private String name;
-    private String assigner;
+    private User assigner;
     private String assignee;
     private Date created;
     private Date updated;
@@ -26,7 +25,7 @@ public class Ticket {
         // no arg constructor
     }
 
-    public Ticket(String id, String name, String assigner, String assignee, Date created, Date updated, String description, String status, String priority, List<Comment> comments) {
+    public Ticket(String id, String name, User assigner, String assignee, Date created, Date updated, String description, String status, String priority, List<Comment> comments) {
         this.id = id;
         this.name = name;
         this.assigner = assigner;
@@ -60,11 +59,11 @@ public class Ticket {
         this.name = name;
     }
 
-    public String getAssigner() {
+    public User getAssigner() {
         return assigner;
     }
 
-    public void setAssigner(String assigner) {
+    public void setAssigner(User assigner) {
         this.assigner = assigner;
     }
 

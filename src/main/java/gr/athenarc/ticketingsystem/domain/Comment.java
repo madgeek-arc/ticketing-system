@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class Comment {
 
-    private String from;
+    private User from;
     private String text;
     private Date date;
 
@@ -12,7 +12,7 @@ public class Comment {
         // no arg constructor
     }
 
-    public Comment(String from, String text, Date date) {
+    public Comment(User from, String text, Date date) {
         this.from = from;
         this.text = text;
         this.date = date;
@@ -22,11 +22,11 @@ public class Comment {
         this(comment.getFrom(), comment.getText(), Date.from(comment.getDate().toInstant()));
     }
 
-    public String getFrom() {
+    public User getFrom() {
         return from;
     }
 
-    public void setFrom(String from) {
+    public void setFrom(User from) {
         this.from = from;
     }
 

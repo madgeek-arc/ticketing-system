@@ -1,6 +1,7 @@
 package gr.athenarc.ticketingsystem;
 
 import gr.athenarc.ticketingsystem.domain.Ticket;
+import gr.athenarc.ticketingsystem.domain.User;
 
 public class TestHelper {
 
@@ -12,7 +13,7 @@ public class TestHelper {
         Ticket ticket = new Ticket();
         ticket.setId(id);
         ticket.setName(TEST_TICKET_NAME);
-        ticket.setAssigner(TEST_TICKET_ASSIGNER);
+        ticket.setAssigner(createTestAssigner());
         ticket.setAssignee(TEST_TICKET_ASSIGNEE);
         ticket.setDescription("This is a test ticket. Should you find it, ignore or delete it.");
         ticket.setPriority("low");
@@ -23,7 +24,7 @@ public class TestHelper {
     public static Ticket createTestTicket() {
         Ticket ticket = new Ticket();
         ticket.setName(TEST_TICKET_NAME);
-        ticket.setAssigner(TEST_TICKET_ASSIGNER);
+        ticket.setAssigner(createTestAssigner());
         ticket.setAssignee(TEST_TICKET_ASSIGNEE);
         ticket.setDescription("This is a test ticket. Should you find it, ignore or delete it.");
         ticket.setPriority("low");
@@ -35,11 +36,19 @@ public class TestHelper {
         Ticket ticket = new Ticket();
         ticket.setName("Test");
         ticket.setAssignee("assignee@test.ts");
-        ticket.setAssigner("assigner@test.ts");
+        ticket.setAssigner(createTestAssigner());
         ticket.setDescription("This is a test ticket. Should you find it, ignore or delete it.");
         ticket.setPriority("low");
         ticket.setStatus("pending");
         return ticket;
+    }
+
+    public static User createTestUser() {
+        return new User("Name", "Surname", "name-surname@mail.test");
+    }
+
+    public static User createTestAssigner() {
+        return new User("Test", "Assigner", TEST_TICKET_ASSIGNER);
     }
 
     private TestHelper() {}

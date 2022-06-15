@@ -4,7 +4,7 @@ import gr.athenarc.ticketingsystem.domain.Comment;
 import gr.athenarc.ticketingsystem.domain.Ticket;
 import gr.athenarc.ticketingsystem.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -44,13 +44,12 @@ public class TicketService {
         return ticketRepository.findById(id);
     }
 
-    public Flux<Ticket> getAll() {
-        Sort sort = Sort.by("name", "updated", "created");
-        return ticketRepository.findAll(sort);
+    public Flux<Ticket> getAll(String status, String priority, String keyword, Pageable pageable) {
+        return ticketRepository.search(status, priority, keyword, pageable);
     }
 
     public Flux<Ticket> getAllByName(String name) {
-        return ticketRepository.findAllByName(name);
+        return ticketRepository.findAllByNameRegex(name);
     }
 
     public Mono<Ticket> addComment(String ticketId, Comment comment) {

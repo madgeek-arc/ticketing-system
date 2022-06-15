@@ -4,7 +4,9 @@ import gr.athenarc.ticketingsystem.domain.Ticket;
 import gr.athenarc.ticketingsystem.repository.TicketRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -13,46 +15,41 @@ import static gr.athenarc.ticketingsystem.TestHelper.*;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest
+@AutoConfigureDataJpa
+@ActiveProfiles("test")
 class TicketingSystemApplicationTests {
 
-	@Autowired
-	private TicketRepository ticketRepository;
+    private static final String TEST_ID = "test";
+    @Autowired
+    private TicketRepository ticketRepository;
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void repoSaveAndFindByName() {
+        ticketRepository.save(TestHelper.createTestTicket(TEST_ID)).block();
+        Flux<Ticket> ticketFlux = ticketRepository.findAllByNameRegex(TEST_TICKET_NAME);
 
-	@Test
-	void repoSaveAndFindByName() {
-		ticketRepository.save(TestHelper.createTestTicket()).block();
-		Flux<Ticket> ticketFlux = ticketRepository.findAllByName("Test");
+        StepVerifier
+                .create(ticketFlux)
+                .assertNext(ticket -> {
+                    assertNotNull(ticket.getId());
+                    assertEquals("Check Name", TEST_TICKET_NAME, ticket.getName());
+                    assertEquals("Check Assigner", createTestAssigner(), ticket.getAssigner());
+                    assertEquals("Check Assignee", TEST_TICKET_ASSIGNEE, ticket.getAssignee());
+                    assertNotNull(ticket.getAssigner());
+                })
+                .expectNextCount(0)
+                .expectComplete()
+                .verify();
+    }
 
-		StepVerifier
-				.create(ticketFlux)
-				.assertNext(ticket -> {
-					assertNotNull(ticket.getId());
-					assertEquals("Check Name", TEST_TICKET_NAME, ticket.getId());
-					assertEquals("Check Assigner", TEST_TICKET_ASSIGNER , ticket.getAssigner());
-					assertEquals("Check Assignee", TEST_TICKET_ASSIGNEE , ticket.getAssignee());
-					assertNotNull(ticket.getAssigner());
-				})
-				.expectComplete()
-				.verify();
-	}
+    @Test
+    void repoDelete() {
+        ticketRepository.deleteById(TEST_ID).block();
+        Flux<Ticket> ticketFlux = ticketRepository.findById(TEST_ID).flux();
 
-	@Test
-	void repoDelete() {
-		ticketRepository.deleteById("test").block();
-		Flux<Ticket> ticketFlux = ticketRepository.findById("test").flux();
-
-		StepVerifier
-				.create(ticketFlux)
-				.assertNext(ticket -> {
-					assertEquals("Check ID", "test", ticket.getId());
-					assertEquals("Check Assignee", "me@me.me" , ticket.getAssignee());
-					assertNotNull(ticket.getAssigner());
-				})
-				.expectComplete()
-				.verify();
-	}
+        StepVerifier
+                .create(ticketFlux)
+                .expectNextCount(0)
+                .verifyComplete();
+    }
 }
