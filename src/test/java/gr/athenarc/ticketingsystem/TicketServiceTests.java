@@ -82,7 +82,8 @@ class TicketServiceTests {
         if (t != null && t.getId() != null) {
             ticketId = t.getId();
         }
-        for (int i = 0; i < 60; i++) {
+        int total = 20;
+        for (int i = 0; i < total; i++) {
             User user = new User("User" + i % 6 + 1, "User" + i % 6 + 1, String.format("user%s@mail.test", i % 6 + 1));
             Comment comment = new Comment();
             comment.setFrom(user);
@@ -94,7 +95,7 @@ class TicketServiceTests {
         StepVerifier
                 .create(ticketMono.flux())
                 .assertNext(ticket -> {
-                    assertEquals(60, ticket.getComments().size(), "Ticket has 60 comments.");
+                    assertEquals(total, ticket.getComments().size(), String.format("Ticket has %s comments.", total));
                 })
                 .expectComplete()
                 .verify();
@@ -106,7 +107,7 @@ class TicketServiceTests {
         Ticket ticket = ticketService.get(TICKET_ID).blockOptional().orElse(createTestTicket());
         ticket.setId(null);
         String ticketName = "REMOVE ME ";
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 1000; i++) {
             Ticket t = new Ticket(ticket);
             t.setName(ticketName + i);
             ticketService.add(t).block();
