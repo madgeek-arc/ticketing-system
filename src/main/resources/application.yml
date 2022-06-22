@@ -1,0 +1,24 @@
+
+server:
+  port: 8380
+  servlet.contextPath: /requests-api
+
+# mongodb
+
+
+spring:
+
+  data.mongodb:
+    host: localhost
+    port: 27017
+    database: dev
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri:
+
+logging:
+  level:
+    org.springframework.security.: INFO

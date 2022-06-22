@@ -2,10 +2,14 @@ package gr.athenarc.ticketingsystem.controller;
 
 import gr.athenarc.ticketingsystem.domain.Comment;
 import gr.athenarc.ticketingsystem.domain.Ticket;
+import gr.athenarc.ticketingsystem.domain.User;
 import gr.athenarc.ticketingsystem.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,12 +26,16 @@ public class TicketController {
     }
 
     @PostMapping()
+    @PreAuthorize("isAuthenticated()")
     public Mono<Ticket> addTicket(@RequestBody Ticket ticket) {
+        ticket.setAssigner(User.of(SecurityContextHolder.getContext().getAuthentication()));
         return ticketService.add(ticket);
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("isAuthenticated()")
     public Mono<Ticket> updateTicket(@PathVariable("id") String id, @RequestBody Ticket ticket) {
+        ticket.setAssigner(User.of(SecurityContextHolder.getContext().getAuthentication()));
         return ticketService.update(id, ticket);
     }
 
@@ -50,14 +58,12 @@ public class TicketController {
         return ticketService.getAll(status, priority, keyword, PageRequest.of(page, size, sort));
     }
 
-    @GetMapping("name")
-//    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Ticket> search(@RequestParam(value = "name", defaultValue = "") String name) {
-        return ticketService.getAllByName(name);
-    }
-
+//    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("{id}/comments")
+    @PreAuthorize("isAuthenticated()")
     public Mono<Ticket> addComment(@PathVariable String id, @RequestBody Comment comment) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        comment.setFrom(User.of(auth));
         return ticketService.addComment(id, comment);
     }
 }

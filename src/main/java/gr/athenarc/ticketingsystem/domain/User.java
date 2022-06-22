@@ -1,7 +1,16 @@
 package gr.athenarc.ticketingsystem.domain;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+
 public class User {
 
+    private static final Logger logger = LoggerFactory.getLogger(User.class);
+
+    String sub;
     String firstname;
     String lastname;
     String email;
@@ -16,8 +25,34 @@ public class User {
         this.email = email;
     }
 
+    public static User of(Authentication auth) {
+        logger.trace("Creating UserService from Authentication: %n{}", auth);
+        User user = new User();
+        if (auth == null) {
+            throw new InsufficientAuthenticationException("You are not authenticated, please log in.");
+        } else if (auth.getPrincipal() instanceof Jwt) {
+            Jwt principal = ((Jwt) auth.getPrincipal());
+            user.sub = principal.getClaimAsString("sub");
+            user.email = principal.getClaimAsString("email");
+            user.firstname = principal.getClaimAsString("name");
+            user.lastname = principal.getClaimAsString("family_name");
+        } else {
+            throw new InsufficientAuthenticationException("Could not create user. Insufficient user authentication");
+        }
+        logger.debug("UserService from Authentication: {}", user);
+        return user;
+    }
+
     public User(User user) {
         this(user.getFirstname(), user.getLastname(), user.getEmail());
+    }
+
+    public String getSub() {
+        return sub;
+    }
+
+    public void setSub(String sub) {
+        this.sub = sub;
     }
 
     public String getFirstname() {
